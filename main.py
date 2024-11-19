@@ -1,35 +1,23 @@
 from typing import Optional, List
 from fastapi import FastAPI
 from pydantic import BaseModel
-
+from api import users, courses, sections
 
 app = FastAPI()
 
+PORT = 8000
 
 
-class User(BaseModel):
-    email:str
-    is_active:bool
-    bio:Optional[str]
-
-
-
-users=[]
 
 
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
 
-@app.get("/users", response_model=List[User])
-async def get_users():
-    return users
 
-@app.post("/users")
-async def create_user(user:User):
-    users.append(user)
-    return "Success"
+app.include_router(users.router)
+app.include_router(sections.router)
+app.include_router(courses.router)
 
-@app.get("/users/{id}")
-async def get_emailUser(id:int = Path()):
-    return users[id]
+
+print(f'Application Running on http://localhost:{PORT}')
